@@ -63,7 +63,6 @@ def test_densenet_models(input_var, model_name, pool, assert_equal_outputs):
     assert_equal_outputs(input_var, original_model, finetune_model)
 
 
-
 @pytest.mark.parametrize(
     'model_name',
     ['densenet121', 'densenet169', 'densenet201',  'densenet161']
@@ -136,7 +135,7 @@ def test_vgg_models_with_another_input_size(model_name, input_var, pool):
         pool=pool,
         pretrained=True,
     )
-    output = model(input_var)
+    model(input_var)
 
 
 @pytest.mark.parametrize('model_name', ['squeezenet1_0', 'squeezenet1_1'])

@@ -144,7 +144,6 @@ class InceptionV4Wrapper(PretrainedModelsWrapper):
         return pretrainedmodels.inceptionv4(**model_kwargs)
 
 
-
 class XceptionWrapper(PretrainedModelsWrapper):
 
     model_names = ['xception']

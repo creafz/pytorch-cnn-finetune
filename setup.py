@@ -22,7 +22,7 @@ requirements = [
     'torch',
     'torchvision',
     'pretrainedmodels',
-    'scipy', # required for torchvision
+    'scipy',  # required for torchvision
     'tqdm',  # required for pretrainedmodels
 ]
 

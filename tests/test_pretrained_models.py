@@ -89,7 +89,7 @@ def test_inceptionresnetv2_model_with_another_input_size(input_var):
 
 @pytest.mark.parametrize(
     'model_name',
-    ['dpn68', 'dpn68b', 'dpn92', 'dpn98', 'dpn131','dpn107']
+    ['dpn68', 'dpn68b', 'dpn92', 'dpn98', 'dpn131', 'dpn107']
 )
 @pytest.mark.parametrize(['pool', 'assert_equal_outputs'], [
     (nn.AvgPool2d(kernel_size=7, stride=1), assert_equal_model_outputs),
@@ -115,7 +115,7 @@ def test_dpn_models(input_var, model_name, pool, assert_equal_outputs):
 
 @pytest.mark.parametrize(
     'model_name',
-    ['dpn68', 'dpn68b', 'dpn92', 'dpn98', 'dpn131','dpn107']
+    ['dpn68', 'dpn68b', 'dpn92', 'dpn98', 'dpn131', 'dpn107']
 )
 @pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
 def test_dpn_models_with_another_input_size(model_name, input_var):
