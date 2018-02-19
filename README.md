@@ -55,6 +55,8 @@ model = make_model('nasnetalarge', num_classes=10, pretrained=True, dropout_p=0.
 
 #### Make a model with Global Max Pooling instead of Global Average Pooling
 ```
+import torch.nn as nn
+
 model = make_model('inceptionresnetv2', num_classes=10, pretrained=True, pool=nn.AdaptiveMaxPool2d(1))
 ```
 
