@@ -13,7 +13,8 @@ def get_version():
 
 
 def get_long_description():
-    with open('README.md') as f:
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    with open(os.path.join(base_dir, 'README.md')) as f:
         return f.read()
 
 
