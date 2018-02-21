@@ -2,7 +2,7 @@ Fine-tune pretrained Convolutional Neural Networks with PyTorch.
 
 
 ### Features
-- Gives access to most popular CNN architectures pretrained on ImageNet.
+- Gives access to the most popular CNN architectures pretrained on ImageNet.
 - Automatically replaces classifier on top of the network, which allows you to train a network with a dataset that has a different number of classes.
 - Allows you to use images with any resolution (and not only the resolution that was used for training the original model on ImageNet).
 - Allows adding a Dropout layer or a custom pooling layer.
@@ -67,6 +67,22 @@ when constructing a new model. This information is needed to determine the input
 ```
 model = make_model('vgg16', num_classes=10, pretrained=True, input_size=(256, 256))
 ```
+
+
+#### Make a VGG16 model that takes images of size 256x256 pixels and uses a custom classifier
+```
+import torch.nn as nn
+
+def make_classifier(in_features, num_classes):
+    return nn.Sequential(
+        nn.Linear(in_features, 4096),
+        nn.ReLU(inplace=True),
+        nn.Linear(4096, num_classes),
+    )
+
+model = make_model('vgg16', num_classes=10, pretrained=True, input_size=(256, 256), classifier_factory=make_classifier)
+```
+
 
 #### Show preprocessing that was used to train the original model on ImageNet
 ```
