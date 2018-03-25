@@ -1,3 +1,5 @@
+import types
+
 import pytest
 import torch.nn as nn
 import pretrainedmodels
@@ -59,6 +61,45 @@ def test_nasnetalarge_model(input_var, pool, assert_equal_outputs):
 @pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
 def test_nasnetalarge_model_with_another_input_size(input_var):
     model = make_model('nasnetalarge', num_classes=1000, pretrained=True)
+    model(input_var)
+
+
+@pytest.mark.parametrize(['pool', 'assert_equal_outputs'], [
+    (nn.AvgPool2d(7, stride=1, padding=0), assert_equal_model_outputs),
+    (default, assert_almost_equal_model_outputs),
+])
+@pytest.mark.parametrize('input_var', [(1, 3, 224, 224)], indirect=True)
+def test_nasnetamobile_model(input_var, pool, assert_equal_outputs):
+    original_model = pretrainedmodels.nasnetamobile(
+        pretrained='imagenet', num_classes=1000
+    )
+
+    # Unlike all other models from pretrainedmodels, NASNET-A mobile
+    # passes the classifier's output value through a softmax layer.
+    # We redefine `logits` method for the original model
+    # so it doesn't use softmax, and we can compare outputs.
+    def logits(self, features):
+        x = self.relu(features)
+        x = self.avg_pool(x)
+        x = x.view(x.size(0), -1)
+        x = self.dropout(x)
+        x = self.last_linear(x)
+        return x
+    original_model.logits = types.MethodType(logits, original_model)
+
+    finetune_model = make_model(
+        'nasnetamobile',
+        num_classes=1000,
+        pool=pool,
+        pretrained=True,
+    )
+    copy_module_weights(original_model.last_linear, finetune_model._classifier)
+    assert_equal_outputs(input_var, original_model, finetune_model)
+
+
+@pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
+def test_nasnetamobile_model_with_another_input_size(input_var):
+    model = make_model('nasnetamobile', num_classes=1000, pretrained=True)
     model(input_var)
 
 

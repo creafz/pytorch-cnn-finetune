@@ -21,7 +21,8 @@ Fine-tune pretrained Convolutional Neural Networks with PyTorch.
 
 #### From [Pretrained models for PyTorch](https://github.com/Cadene/pretrained-models.pytorch) package:
 - ResNeXt (`resnext101_32x4d`, `resnext101_64x4d`)
-- NASNet (`nasnetalarge`)
+- NASNet-A Large (`nasnetalarge`)
+- NASNet-A Mobile (`nasnetamobile`)
 - Inception-ResNet v2 (`inceptionresnetv2`)
 - Dual Path Networks (`dpn68`, `dpn68b`, `dpn92`, `dpn98`, `dpn131`, `dpn107`)
 - Inception v4 (`inception_v4`)

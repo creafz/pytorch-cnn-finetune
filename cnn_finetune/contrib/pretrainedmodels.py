@@ -92,6 +92,43 @@ class NasNetWrapper(PretrainedModelsWrapper):
         return x
 
 
+class NasNetMobileWrapper(PretrainedModelsWrapper):
+
+    model_names = ['nasnetamobile']
+
+    def get_features(self, original_model):
+        features = nn.Module()
+        for name, module in list(original_model.named_children())[:-3]:
+            features.add_module(name, module)
+        return features
+
+    def features(self, input):
+        x_conv0 = self._features.conv0(input)
+        x_stem_0 = self._features.cell_stem_0(x_conv0)
+        x_stem_1 = self._features.cell_stem_1(x_conv0, x_stem_0)
+
+        x_cell_0 = self._features.cell_0(x_stem_1, x_stem_0)
+        x_cell_1 = self._features.cell_1(x_cell_0, x_stem_1)
+        x_cell_2 = self._features.cell_2(x_cell_1, x_cell_0)
+        x_cell_3 = self._features.cell_3(x_cell_2, x_cell_1)
+
+        x_reduction_cell_0 = self._features.reduction_cell_0(x_cell_3, x_cell_2)
+
+        x_cell_6 = self._features.cell_6(x_reduction_cell_0, x_cell_3)
+        x_cell_7 = self._features.cell_7(x_cell_6, x_reduction_cell_0)
+        x_cell_8 = self._features.cell_8(x_cell_7, x_cell_6)
+        x_cell_9 = self._features.cell_9(x_cell_8, x_cell_7)
+
+        x_reduction_cell_1 = self._features.reduction_cell_1(x_cell_9, x_cell_8)
+
+        x_cell_12 = self._features.cell_12(x_reduction_cell_1, x_cell_9)
+        x_cell_13 = self._features.cell_13(x_cell_12, x_reduction_cell_1)
+        x_cell_14 = self._features.cell_14(x_cell_13, x_cell_12)
+        x_cell_15 = self._features.cell_15(x_cell_14, x_cell_13)
+        x = self._features.relu(x_cell_15)
+        return x
+
+
 class InceptionResNetV2Wrapper(PretrainedModelsWrapper):
 
     model_names = ['inceptionresnetv2']
