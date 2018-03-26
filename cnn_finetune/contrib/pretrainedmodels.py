@@ -7,7 +7,8 @@ from cnn_finetune.base import ModelWrapperBase, ModelInfo
 
 __all__ = [
     'ResNeXtWrapper', 'NasNetWrapper', 'InceptionResNetV2Wrapper',
-    'DPNWrapper', 'InceptionV4Wrapper', 'XceptionWrapper'
+    'DPNWrapper', 'InceptionV4Wrapper', 'XceptionWrapper',
+    'NasNetMobileWrapper'
 ]
 
 
