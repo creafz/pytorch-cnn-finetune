@@ -84,6 +84,8 @@ optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 
 
 def train(epoch):
+    total_loss = 0
+    total_size = 0
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         if args.cuda:
@@ -92,12 +94,14 @@ def train(epoch):
         optimizer.zero_grad()
         output = model(data)
         loss = criterion(output, target)
+        total_loss += loss.data[0]
+        total_size += data.size(0)
         loss.backward()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tAverage loss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.data[0]))
+                100. * batch_idx / len(train_loader), total_loss / total_size))
 
 
 def test():
