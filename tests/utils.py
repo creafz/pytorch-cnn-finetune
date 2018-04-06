@@ -28,3 +28,9 @@ def assert_almost_equal_model_outputs(input_var, model1, model2):
 def copy_module_weights(from_module, to_module):
     to_module.weight.data.copy_(from_module.weight.data)
     to_module.bias.data.copy_(from_module.bias.data)
+
+
+def assert_iterable_length_and_type(iterable, length, element_type):
+    assert len(iterable) == length
+    for element in iterable:
+        assert isinstance(element, element_type)

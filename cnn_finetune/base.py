@@ -101,7 +101,13 @@ class ModelWrapperBase(nn.Module, metaclass=ModelWrapperMeta):
         self.dropout = nn.Dropout(p=dropout_p) if dropout_p else None
         self.pool = self.get_pool() if pool is default else pool
         self.input_size = input_size
-        self.original_model_info = self.get_original_model_info(original_model)
+
+        if pretrained:
+            self.original_model_info = self.get_original_model_info(
+                original_model
+            )
+        else:
+            self.original_model_info = None
 
         if input_size:
             classifier_in_features = self.calculate_classifier_in_features(
