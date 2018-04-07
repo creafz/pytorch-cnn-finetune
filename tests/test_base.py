@@ -95,3 +95,15 @@ def test_models_without_pretrained_weights_dont_have_model_info(model_name):
         input_size=input_size,
     )
     assert model.original_model_info is None
+
+
+@pytest.mark.parametrize('model_name', list(MODEL_REGISTRY.keys()))
+@pytest.mark.parametrize('pretrained', [True, False])
+def test_make_model_with_specific_input_size(model_name, pretrained):
+    make_model(
+        model_name,
+        pretrained=pretrained,
+        num_classes=10,
+        dropout_p=0.5,
+        input_size=(256, 256),
+    )

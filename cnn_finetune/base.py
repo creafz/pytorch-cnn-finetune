@@ -154,17 +154,17 @@ class ModelWrapperBase(nn.Module, metaclass=ModelWrapperMeta):
         return None
 
     def calculate_classifier_in_features(self, original_model):
-        # Runs forward pass through feature extractor to get
+        # Runs forward pass through the feature extractor to get
         # the number of input features for classifier.
 
         with no_grad_variable(torch.zeros(1, 3, *self.input_size)) as input_var:
             # Set model to the eval mode so forward pass
             # won't affect BatchNorm statistics.
-            original_model.eval()
-            output = original_model.features(input_var)
+            self.eval()
+            output = self.features(input_var)
             if self.pool is not None:
                 output = self.pool(output)
-            original_model.train()
+            self.train()
             return product(output.size()[1:])
 
     def check_args(self, **kwargs):
