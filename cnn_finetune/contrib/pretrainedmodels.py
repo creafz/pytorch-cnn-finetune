@@ -8,7 +8,7 @@ from cnn_finetune.base import ModelWrapperBase, ModelInfo
 __all__ = [
     'ResNeXtWrapper', 'NasNetWrapper', 'InceptionResNetV2Wrapper',
     'DPNWrapper', 'InceptionV4Wrapper', 'XceptionWrapper',
-    'NasNetMobileWrapper'
+    'NasNetMobileWrapper', 'SenetWrapper'
 ]
 
 
@@ -188,3 +188,20 @@ class XceptionWrapper(PretrainedModelsWrapper):
 
     def get_features(self, original_model):
         return nn.Sequential(*list(original_model.children())[:-1])
+
+
+class SenetWrapper(PretrainedModelsWrapper):
+
+    model_names = [
+        'senet154', 'se_resnet50', 'se_resnet101', 'se_resnet152',
+        'se_resnext50_32x4d', 'se_resnext101_32x4d',
+    ]
+
+    def get_features(self, original_model):
+        return nn.Sequential(
+            original_model.layer0,
+            original_model.layer1,
+            original_model.layer2,
+            original_model.layer3,
+            original_model.layer4,
+        )

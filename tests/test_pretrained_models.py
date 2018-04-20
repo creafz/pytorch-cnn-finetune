@@ -193,3 +193,41 @@ def test_inceptionresnetv2_model_with_another_input_size(input_var):
 def test_xception_model_with_another_input_size(input_var):
     model = make_model('xception', num_classes=1000, pretrained=True)
     model(input_var)
+
+
+@pytest.mark.parametrize(
+    'model_name',
+    [
+        'senet154', 'se_resnet50', 'se_resnet101', 'se_resnet152',
+        'se_resnext50_32x4d', 'se_resnext101_32x4d',
+    ]
+)
+@pytest.mark.parametrize(['pool', 'assert_equal_outputs'], [
+    (nn.AvgPool2d((7, 7), (1, 1)), assert_equal_model_outputs),
+    (default, assert_almost_equal_model_outputs),
+])
+def test_senet_models(input_var, model_name, pool, assert_equal_outputs):
+    original_model = getattr(pretrainedmodels, model_name)(
+        pretrained='imagenet', num_classes=1000
+    )
+    finetune_model = make_model(
+        model_name,
+        num_classes=1000,
+        pool=pool,
+        pretrained=True,
+    )
+    copy_module_weights(original_model.last_linear, finetune_model._classifier)
+    assert_equal_outputs(input_var, original_model, finetune_model)
+
+
+@pytest.mark.parametrize(
+    'model_name',
+    [
+        'senet154', 'se_resnet50', 'se_resnet101', 'se_resnet152',
+        'se_resnext50_32x4d', 'se_resnext101_32x4d',
+    ]
+)
+@pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
+def test_senet_models_with_another_input_size(input_var, model_name):
+    model = make_model(model_name, num_classes=1000, pretrained=True)
+    model(input_var)
