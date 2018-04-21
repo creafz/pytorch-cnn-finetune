@@ -1,4 +1,7 @@
-Fine-tune pretrained Convolutional Neural Networks with PyTorch.
+### Fine-tune pretrained Convolutional Neural Networks with PyTorch.
+
+
+[![PyPI](https://img.shields.io/pypi/v/cnn-finetune.svg)](https://pypi.org/project/cnn-finetune/)
 
 
 ### Features
