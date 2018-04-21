@@ -40,6 +40,7 @@ setup(
         'Fine-tune pretrained Convolutional Neural Networks with PyTorch'
     ),
     long_description=get_long_description(),
+    long_description_content_type='text/markdown',
     author='Alex Parinov',
     author_email='creafz@gmail.com',
     url='https://github.com/creafz/pytorch-cnn-finetune',
