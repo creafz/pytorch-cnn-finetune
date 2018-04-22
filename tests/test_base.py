@@ -107,3 +107,31 @@ def test_make_model_with_specific_input_size(model_name, pretrained):
         dropout_p=0.5,
         input_size=(256, 256),
     )
+
+
+def test_make_model_error_message_for_small_input_size():
+    expected_message_end = (
+        'Input size (8, 8) is too small for this model. Try increasing '
+        'the input size of images and change the value of input_size '
+        'argument accordingly.'
+    )
+    with pytest.raises(RuntimeError) as exc_info:
+        make_model('vgg11', pretrained=True, num_classes=10, input_size=(8, 8))
+    assert str(exc_info.value).endswith(expected_message_end)
+
+
+def test_make_model_error_message_for_small_input_size_without_catching_exc():
+    unexpected_message_end = (
+        'Input size (8, 8) is too small for this model. Try increasing '
+        'the input size of images and change the value of input_size '
+        'argument accordingly.'
+    )
+    with pytest.raises(RuntimeError) as exc_info:
+        make_model(
+            'vgg11',
+            pretrained=True,
+            num_classes=10,
+            input_size=(8, 8),
+            catch_output_size_exception=False,
+        )
+    assert not str(exc_info.value).endswith(unexpected_message_end)

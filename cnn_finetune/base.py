@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from collections import namedtuple
+import sys
 import warnings
 
 import torch
@@ -67,7 +68,7 @@ class ModelWrapperBase(nn.Module, metaclass=ModelWrapperMeta):
 
     def __init__(self, *, model_name, num_classes, pretrained, dropout_p, pool,
                  classifier_factory, use_original_classifier, input_size,
-                 original_model_state_dict):
+                 original_model_state_dict, catch_output_size_exception):
         super().__init__()
 
         if num_classes < 1:
@@ -92,6 +93,7 @@ class ModelWrapperBase(nn.Module, metaclass=ModelWrapperMeta):
         self.model_name = model_name
         self.num_classes = num_classes
         self.pretrained = pretrained
+        self.catch_output_size_exception = catch_output_size_exception
 
         original_model = self.get_original_model()
         if original_model_state_dict is not None:
@@ -161,9 +163,25 @@ class ModelWrapperBase(nn.Module, metaclass=ModelWrapperMeta):
             # Set model to the eval mode so forward pass
             # won't affect BatchNorm statistics.
             self.eval()
-            output = self.features(input_var)
-            if self.pool is not None:
-                output = self.pool(output)
+            try:
+                output = self.features(input_var)
+                if self.pool is not None:
+                    output = self.pool(output)
+            except RuntimeError as e:
+                if (
+                    self.catch_output_size_exception
+                    and 'Output size is too small' in str(e)
+                ):
+                    _, _, traceback = sys.exc_info()
+                    message = (
+                        'Input size {input_size} is too small for this model. '
+                        'Try increasing the input size of images and '
+                        'change the value of input_size argument accordingly.'
+                        .format(input_size=self.input_size)
+                    )
+                    raise RuntimeError(message).with_traceback(traceback)
+                else:
+                    raise e
             self.train()
             return product(output.size()[1:])
 
@@ -210,6 +228,7 @@ def make_model(
     use_original_classifier=False,
     input_size=None,
     original_model_state_dict=None,
+    catch_output_size_exception=True,
 ):
     """
     Args:
@@ -231,8 +250,11 @@ def make_model(
             layers such as AlexNet or VGG.
         original_model_state_dict (dict, optional): Dict containing
             parameters for the original model.
+        catch_output_size_exception(boolean, optional): If True catch PyTorch
+            exceptions that contain 'Output size is too small' message and
+            show a custom exception message about adjusting the input_size
+            value.
     """
-
     if model_name not in MODEL_REGISTRY:
         raise ValueError(
             'model_name {model_name} not found. '
@@ -252,4 +274,5 @@ def make_model(
         use_original_classifier=use_original_classifier,
         input_size=input_size,
         original_model_state_dict=original_model_state_dict,
+        catch_output_size_exception=catch_output_size_exception,
     )
