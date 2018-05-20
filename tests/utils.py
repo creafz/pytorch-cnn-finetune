@@ -34,3 +34,13 @@ def assert_iterable_length_and_type(iterable, length, element_type):
     assert len(iterable) == length
     for element in iterable:
         assert isinstance(element, element_type)
+
+
+def get_default_input_size_for_model(model_name):
+    if (
+        model_name == 'alexnet'
+        or model_name.startswith('vgg')
+        or model_name.startswith('squeezenet')
+    ):
+        return 224, 224
+    return None

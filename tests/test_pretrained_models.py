@@ -73,20 +73,6 @@ def test_nasnetamobile_model(input_var, pool, assert_equal_outputs):
     original_model = pretrainedmodels.nasnetamobile(
         pretrained='imagenet', num_classes=1000
     )
-
-    # Unlike all other models from pretrainedmodels, NASNET-A mobile
-    # passes the classifier's output value through a softmax layer.
-    # We redefine `logits` method for the original model
-    # so it doesn't use softmax, and we can compare outputs.
-    def logits(self, features):
-        x = self.relu(features)
-        x = self.avg_pool(x)
-        x = x.view(x.size(0), -1)
-        x = self.dropout(x)
-        x = self.last_linear(x)
-        return x
-    original_model.logits = types.MethodType(logits, original_model)
-
     finetune_model = make_model(
         'nasnetamobile',
         num_classes=1000,
@@ -189,6 +175,10 @@ def test_inceptionresnetv2_model_with_another_input_size(input_var):
     model(input_var)
 
 
+@pytest.mark.skip(
+    'Xception model fails to load in PyTorch 0.4. '
+    'https://github.com/Cadene/pretrained-models.pytorch/issues/62'
+)
 @pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
 def test_xception_model_with_another_input_size(input_var):
     model = make_model('xception', num_classes=1000, pretrained=True)

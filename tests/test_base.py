@@ -3,7 +3,10 @@ import torch
 
 from cnn_finetune import make_model
 from cnn_finetune.base import MODEL_REGISTRY
-from .utils import assert_iterable_length_and_type
+from .utils import (
+    assert_iterable_length_and_type,
+    get_default_input_size_for_model,
+)
 
 
 def test_load_state_dict():
@@ -44,13 +47,7 @@ def test_state_dict_features_and_classifier():
 
 @pytest.mark.parametrize('model_name', list(MODEL_REGISTRY.keys()))
 def test_every_pretrained_model_has_model_info(model_name):
-    input_size = None
-    if (
-        model_name == 'alexnet'
-        or model_name.startswith('vgg')
-        or model_name.startswith('squeezenet')
-    ):
-        input_size = (224, 224)
+    input_size = get_default_input_size_for_model(model_name)
     model = make_model(
         model_name,
         pretrained=True,
@@ -80,13 +77,7 @@ def test_every_pretrained_model_has_model_info(model_name):
 
 @pytest.mark.parametrize('model_name', list(MODEL_REGISTRY.keys()))
 def test_models_without_pretrained_weights_dont_have_model_info(model_name):
-    input_size = None
-    if (
-        model_name == 'alexnet'
-        or model_name.startswith('vgg')
-        or model_name.startswith('squeezenet')
-    ):
-        input_size = (224, 224)
+    input_size = get_default_input_size_for_model(model_name)
     model = make_model(
         model_name,
         pretrained=False,
@@ -135,3 +126,10 @@ def test_make_model_error_message_for_small_input_size_without_catching_exc():
             catch_output_size_exception=False,
         )
     assert not str(exc_info.value).endswith(unexpected_message_end)
+
+
+@pytest.mark.parametrize('model_name', list(MODEL_REGISTRY.keys()))
+def test_call_to_make_model_returns_pretrained_model_by_default(model_name):
+    input_size = get_default_input_size_for_model(model_name)
+    model = make_model(model_name, num_classes=10, input_size=input_size)
+    assert model.pretrained
