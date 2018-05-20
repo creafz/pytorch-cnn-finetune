@@ -40,7 +40,8 @@ parser.add_argument('--dropout-p', type=float, default=0.2, metavar='D',
 
 
 args = parser.parse_args()
-args.cuda = not args.no_cuda and torch.cuda.is_available()
+use_cuda = not args.no_cuda and torch.cuda.is_available()
+device = torch.device('cuda' if use_cuda else 'cpu')
 
 
 classes = (
@@ -55,8 +56,7 @@ model = make_model(
     num_classes=len(classes),
     dropout_p=args.dropout_p,
 )
-if args.cuda:
-    model.cuda()
+model = model.to(device)
 
 
 transform = transforms.Compose([
@@ -88,13 +88,11 @@ def train(epoch):
     total_size = 0
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
-        if args.cuda:
-            data, target = data.cuda(), target.cuda()
-        data, target = Variable(data), Variable(target)
+        data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
         loss = criterion(output, target)
-        total_loss += loss.data[0]
+        total_loss += loss.item()
         total_size += data.size(0)
         loss.backward()
         optimizer.step()
@@ -108,14 +106,13 @@ def test():
     model.eval()
     test_loss = 0
     correct = 0
-    for data, target in test_loader:
-        if args.cuda:
-            data, target = data.cuda(), target.cuda()
-        data, target = Variable(data, volatile=True), Variable(target)
-        output = model(data)
-        test_loss += criterion(output, target).data[0]
-        pred = output.data.max(1, keepdim=True)[1]
-        correct += pred.eq(target.data.view_as(pred)).cpu().sum()
+    with torch.no_grad():
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            test_loss += criterion(output, target).item()
+            pred = output.data.max(1, keepdim=True)[1]
+            correct += pred.eq(target.data.view_as(pred)).long().cpu().sum().item()
 
     test_loss /= len(test_loader.dataset)
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(

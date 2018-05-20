@@ -99,4 +99,4 @@ ModelInfo(input_space='RGB', input_size=[3, 224, 224], input_range=[0, 1], mean=
 ```
 
 #### CIFAR10 Example
-See [examples/cifar10.py](examples/cifar10.py) file.
+See [examples/cifar10.py](examples/cifar10.py) file (requires PyTorch 0.4).
