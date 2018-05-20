@@ -43,6 +43,12 @@
 pip install cnn_finetune
 ```
 
+
+### Major changes:
+#### Version 0.4
+- Default value for `pretrained` argument in `make_model` is changed from `False` to `True`. Now call `make_model('resnet18', num_classes=10)` is equal to `make_model('resnet18', num_classes=10, pretrained=True)`
+
+
 ### Example usage:
 
 #### Make a model with ImageNet weights for 10 classes
