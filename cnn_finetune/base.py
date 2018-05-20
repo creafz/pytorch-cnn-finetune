@@ -221,7 +221,7 @@ class ModelWrapperBase(nn.Module, metaclass=ModelWrapperMeta):
 def make_model(
     model_name,
     num_classes,
-    pretrained=False,
+    pretrained=True,
     dropout_p=None,
     pool=default,
     classifier_factory=None,
