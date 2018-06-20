@@ -8,7 +8,7 @@ from cnn_finetune.base import ModelWrapperBase, ModelInfo
 __all__ = [
     'ResNeXtWrapper', 'NasNetWrapper', 'InceptionResNetV2Wrapper',
     'DPNWrapper', 'InceptionV4Wrapper', 'XceptionWrapper',
-    'NasNetMobileWrapper', 'SenetWrapper'
+    'NasNetMobileWrapper', 'SenetWrapper', 'PNasNetWrapper', 'PolyNetWrapper'
 ]
 
 
@@ -205,3 +205,41 @@ class SenetWrapper(PretrainedModelsWrapper):
             original_model.layer3,
             original_model.layer4,
         )
+
+
+class PNasNetWrapper(PretrainedModelsWrapper):
+
+    model_names = ['pnasnet5large']
+
+    def get_features(self, original_model):
+        features = nn.Module()
+        for name, module in list(original_model.named_children())[:-3]:
+            features.add_module(name, module)
+        return features
+
+    def features(self, x):
+        x_conv_0 = self._features.conv_0(x)
+        x_stem_0 = self._features.cell_stem_0(x_conv_0)
+        x_stem_1 = self._features.cell_stem_1(x_conv_0, x_stem_0)
+        x_cell_0 = self._features.cell_0(x_stem_0, x_stem_1)
+        x_cell_1 = self._features.cell_1(x_stem_1, x_cell_0)
+        x_cell_2 = self._features.cell_2(x_cell_0, x_cell_1)
+        x_cell_3 = self._features.cell_3(x_cell_1, x_cell_2)
+        x_cell_4 = self._features.cell_4(x_cell_2, x_cell_3)
+        x_cell_5 = self._features.cell_5(x_cell_3, x_cell_4)
+        x_cell_6 = self._features.cell_6(x_cell_4, x_cell_5)
+        x_cell_7 = self._features.cell_7(x_cell_5, x_cell_6)
+        x_cell_8 = self._features.cell_8(x_cell_6, x_cell_7)
+        x_cell_9 = self._features.cell_9(x_cell_7, x_cell_8)
+        x_cell_10 = self._features.cell_10(x_cell_8, x_cell_9)
+        x_cell_11 = self._features.cell_11(x_cell_9, x_cell_10)
+        x = self._features.relu(x_cell_11)
+        return x
+
+
+class PolyNetWrapper(PretrainedModelsWrapper):
+
+    model_names = ['polynet']
+
+    def get_features(self, original_model):
+        return nn.Sequential(*list(original_model.children())[:-3])

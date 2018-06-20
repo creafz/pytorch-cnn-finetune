@@ -170,7 +170,7 @@ def test_inceptionv4_model(input_var, pool, assert_equal_outputs):
 
 
 @pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
-def test_inceptionresnetv2_model_with_another_input_size(input_var):
+def test_inceptionv4_model_with_another_input_size(input_var):
     model = make_model('inception_v4', num_classes=1000, pretrained=True)
     model(input_var)
 
@@ -220,4 +220,54 @@ def test_senet_models(input_var, model_name, pool, assert_equal_outputs):
 @pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
 def test_senet_models_with_another_input_size(input_var, model_name):
     model = make_model(model_name, num_classes=1000, pretrained=True)
+    model(input_var)
+
+
+@pytest.mark.parametrize(['pool', 'assert_equal_outputs'], [
+    (nn.AvgPool2d(11, stride=1, padding=0), assert_equal_model_outputs),
+    (default, assert_almost_equal_model_outputs),
+])
+@pytest.mark.parametrize('input_var', [(1, 3, 331, 331)], indirect=True)
+def test_pnasnet5large_model(input_var, pool, assert_equal_outputs):
+    original_model = pretrainedmodels.pnasnet5large(
+        pretrained='imagenet', num_classes=1000
+    )
+    finetune_model = make_model(
+        'pnasnet5large',
+        num_classes=1000,
+        pool=pool,
+        pretrained=True,
+    )
+    copy_module_weights(original_model.last_linear, finetune_model._classifier)
+    assert_equal_outputs(input_var, original_model, finetune_model)
+
+
+@pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
+def test_pnasnet5large_model_with_another_input_size(input_var):
+    model = make_model('pnasnet5large', num_classes=1000, pretrained=True)
+    model(input_var)
+
+
+@pytest.mark.parametrize(['pool', 'assert_equal_outputs'], [
+    (nn.AvgPool2d(9, stride=1), assert_equal_model_outputs),
+    (default, assert_almost_equal_model_outputs),
+])
+@pytest.mark.parametrize('input_var', [(1, 3, 331, 331)], indirect=True)
+def test_polynet_model(input_var, pool, assert_equal_outputs):
+    original_model = pretrainedmodels.polynet(
+        pretrained='imagenet', num_classes=1000
+    )
+    finetune_model = make_model(
+        'polynet',
+        num_classes=1000,
+        pool=pool,
+        pretrained=True,
+    )
+    copy_module_weights(original_model.last_linear, finetune_model._classifier)
+    assert_equal_outputs(input_var, original_model, finetune_model)
+
+
+@pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
+def test_polynet_model_with_another_input_size(input_var):
+    model = make_model('polynet', num_classes=1000, pretrained=True)
     model(input_var)
