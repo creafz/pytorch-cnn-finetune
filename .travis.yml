@@ -29,6 +29,4 @@ install:
   - pip install pycodestyle
 
 script:
-  - pytest tests/test_pretrained_models.py::test_nasnetalarge_model -s
-  - pytest tests/test_pretrained_models.py::test_nasnetamobile_model -s
-  - pytest tests/test_pretrained_models.py::test_pnasnet5large_model -s
+  - pytest tests/test_pretrained_models.py -s
