@@ -29,8 +29,6 @@ install:
   - pip install pycodestyle
 
 script:
-  - if [[ "$TEST_MODE" == "PEP8" ]]; then
-      pycodestyle . --max-line-length 119 --ignore=E402;
-    else
-      pytest;
-    fi
+  - pytest tests/test_pretrained_models.py::test_nasnetalarge_model -s
+  - pytest tests/test_pretrained_models.py::test_nasnetamobile_model -s
+  - pytest tests/test_pretrained_models.py::test_pnasnet5large_model -s
