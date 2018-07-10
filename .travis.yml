@@ -46,7 +46,8 @@ install:
     else
       conda install pytorch-cpu=$TORCH_VERSION -c pytorch;
       pip install torchvision;
-    fi  - pip install .[tests]
+    fi
+  - pip install .[tests]
   - pip install pycodestyle
 
 script:
