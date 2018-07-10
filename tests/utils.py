@@ -1,5 +1,10 @@
+import os
+
 import numpy as np
 import torch
+
+
+TRAVIS_CI_ENV = os.environ.get('TRAVIS') == 'true'
 
 
 def assert_equal_model_outputs(input_var, model1, model2):

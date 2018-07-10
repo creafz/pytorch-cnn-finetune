@@ -1,5 +1,3 @@
-import types
-
 import pytest
 import torch.nn as nn
 import pretrainedmodels
@@ -9,7 +7,8 @@ from cnn_finetune.utils import default
 from .utils import (
     assert_equal_model_outputs,
     assert_almost_equal_model_outputs,
-    copy_module_weights
+    copy_module_weights,
+    TRAVIS_CI_ENV,
 )
 
 
@@ -40,7 +39,10 @@ def test_resnext_models_with_another_input_size(input_var, model_name):
 
 
 @pytest.mark.parametrize(['pool', 'assert_equal_outputs'], [
-    (nn.AvgPool2d(11, stride=1, padding=0), assert_equal_model_outputs),
+    (
+        nn.AvgPool2d(11, stride=1, padding=0),
+        assert_almost_equal_model_outputs if TRAVIS_CI_ENV else assert_equal_model_outputs
+    ),
     (default, assert_almost_equal_model_outputs),
 ])
 @pytest.mark.parametrize('input_var', [(1, 3, 331, 331)], indirect=True)
@@ -65,7 +67,10 @@ def test_nasnetalarge_model_with_another_input_size(input_var):
 
 
 @pytest.mark.parametrize(['pool', 'assert_equal_outputs'], [
-    (nn.AvgPool2d(7, stride=1, padding=0), assert_equal_model_outputs),
+    (
+        nn.AvgPool2d(7, stride=1, padding=0),
+        assert_almost_equal_model_outputs if TRAVIS_CI_ENV else assert_equal_model_outputs,
+    ),
     (default, assert_almost_equal_model_outputs),
 ])
 @pytest.mark.parametrize('input_var', [(1, 3, 224, 224)], indirect=True)
@@ -224,7 +229,10 @@ def test_senet_models_with_another_input_size(input_var, model_name):
 
 
 @pytest.mark.parametrize(['pool', 'assert_equal_outputs'], [
-    (nn.AvgPool2d(11, stride=1, padding=0), assert_equal_model_outputs),
+    (
+        nn.AvgPool2d(11, stride=1, padding=0),
+        assert_almost_equal_model_outputs if TRAVIS_CI_ENV else assert_equal_model_outputs,
+    ),
     (default, assert_almost_equal_model_outputs),
 ])
 @pytest.mark.parametrize('input_var', [(1, 3, 331, 331)], indirect=True)
