@@ -51,4 +51,8 @@ install:
   - pip install pycodestyle
 
 script:
-  - pytest
+  - if [[ "$TEST_MODE" == "PEP8" ]]; then
+      pycodestyle . --max-line-length 119;
+    else
+      pytest;
+    fi
