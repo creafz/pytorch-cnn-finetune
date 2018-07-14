@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/python:3.6.1
+      user: root
+    steps:
+      - checkout
+      - run:
+          name: Update
+          command: apt-get update
+      - run:
+          name: Install conda
+          command: |
+            wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+            bash miniconda.sh -b -u -p $HOME/miniconda
+            export PATH="$HOME/miniconda/bin:$PATH"
+            hash -r
+            conda config --set always_yes yes --set changeps1 no
+            conda update -q conda
+            conda info -a
+            conda create -q -n test-environment python=3.6
+            source activate test-environment
+      - run:
+          name: Install PyTorch and torchvision
+          command: conda install pytorch-cpu torchvision-cpu -c pytorch
+      - run:
+          name: Install dependencies
+          command: pip install .[tests]
+      - run:
+          name: run tests
+          command: pytest tests/test_torchvision_models.py::test_squeezenet_models_with_original_classifier
