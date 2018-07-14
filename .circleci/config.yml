@@ -1,11 +1,11 @@
 version: 2
 
-jobs:
-  build:
+references:
+  base_job: &base_job
     machine: true
     steps:
       - restore_cache:
-          key: torch
+          key: torch-v1
       - checkout
       - run:
           name: Update
@@ -20,23 +20,50 @@ jobs:
             conda config --set always_yes yes --set changeps1 no
             conda update -q conda
             conda info -a
-            conda create -q -n test-environment python=3.6
+            conda create -q -n ${ENV_NAME} python=${PYTHON}
       - run:
           name: Install PyTorch and torchvision
           command: |
-            source ~/miniconda/bin/activate test-environment
+            source ~/miniconda/bin/activate ${ENV_NAME}
             conda install pytorch-cpu torchvision-cpu -c pytorch
       - run:
           name: Install dependencies
           command: |
-            source ~/miniconda/bin/activate test-environment
+            source ~/miniconda/bin/activate ${ENV_NAME}
             pip install .[tests]
       - run:
           name: run tests
           command: |
-            source ~/miniconda/bin/activate test-environment
+            source ~/miniconda/bin/activate ${ENV_NAME}
             pytest -s
       - save_cache:
-          key: torch
+          key: torch-v1
           paths:
             - ~/.torch
+
+jobs:
+  pep8:
+    <<: *base_job
+    steps:
+      - checkout
+      - run:
+          name: Install pycodestyle
+          command: pip install pycodestyle
+      - run:
+          name: Check code style
+          command: |
+            pycodestyle . --max-line-length 119;
+
+  python_36:
+    <<: *base_job
+    environment:
+      PYTHON: "3.6"
+      ENV_NAME: "python-36-test"
+
+
+workflows:
+  version: 2
+  run_all_jobs:
+    jobs:
+      - pep8
+      - python_36
