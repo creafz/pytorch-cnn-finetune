@@ -1,9 +1,9 @@
 version: 2
+
 jobs:
-  test:
+  build:
     docker:
       - image: circleci/python:3.6.1
-      user: root
     steps:
       - checkout
       - run:
