@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run:
           name: Update
-          command: apt-get update
+          command: sudo apt-get update
       - run:
           name: Install conda
           command: |
