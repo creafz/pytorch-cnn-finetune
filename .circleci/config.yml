@@ -23,15 +23,15 @@ jobs:
       - run:
           name: Install PyTorch and torchvision
           command: |
-            source activate test-environment
+            source ~/miniconda/bin/activate test-environment
             conda install pytorch-cpu torchvision-cpu -c pytorch
       - run:
           name: Install dependencies
           command: |
-            source activate test-environment
+            source ~/miniconda/bin/activate test-environment
             pip install .[tests]
       - run:
           name: run tests
           command: |
-            source activate test-environment
+            source ~/miniconda/bin/activate test-environment
             pytest tests/test_torchvision_models.py::test_squeezenet_models_with_original_classifier
