@@ -30,6 +30,7 @@ requirements = [
 tests_requirements = [
     'pytest',
     'numpy',
+    'pytest-cov',
 ]
 
 

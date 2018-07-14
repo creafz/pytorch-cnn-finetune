@@ -25,7 +25,7 @@ references:
           name: Install PyTorch and torchvision
           command: |
             source ~/miniconda/bin/activate ${ENV_NAME}
-            if [[ "$PYTORCH_VERSION" == "LATEST" ]]; then
+            if [[ "$PYTORCH_VERSION" == "latest" ]]; then
               conda install pytorch-cpu torchvision-cpu -c pytorch;
             else
               conda install pytorch-cpu=${PYTORCH_VERSION} -c pytorch;
@@ -38,10 +38,15 @@ references:
             source ~/miniconda/bin/activate ${ENV_NAME}
             pip install .[tests]
       - run:
-          name: run tests
+          name: Run tests
           command: |
             source ~/miniconda/bin/activate ${ENV_NAME}
-            pytest -s
+            pytest --cov cnn_finetune
+      - run:
+          name: Upload coverage report to codecov
+          command: |
+            sudo apt-get install -y curl
+            bash <(curl -s https://codecov.io/bash)
       - save_cache:
           key: torch-v1
           paths:
