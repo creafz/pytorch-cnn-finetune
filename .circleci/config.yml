@@ -36,7 +36,7 @@ jobs:
           name: run tests
           command: |
             source ~/miniconda/bin/activate test-environment
-            pytest -s tests/test_torchvision_models.py::test_squeezenet_models_with_original_classifier
+            pytest
       - save_cache:
           key: torch
           paths:
