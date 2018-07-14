@@ -41,7 +41,7 @@ references:
           name: Run tests
           command: |
             source ~/miniconda/bin/activate ${ENV_NAME}
-            pytest --cov cnn_finetune
+            pytest tests/test_torchvision_models.py::test_squeezenet_models_with_original_classifier --cov=./ --cov-report=xml
       - run:
           name: Upload coverage report to codecov
           command: |
