@@ -2,6 +2,8 @@
 
 
 [![PyPI](https://img.shields.io/pypi/v/cnn-finetune.svg)](https://pypi.org/project/cnn-finetune/)
+[![CircleCI](https://circleci.com/gh/creafz/pytorch-cnn-finetune/tree/master.svg?style=shield)](https://circleci.com/gh/creafz/pytorch-cnn-finetune)
+[![codecov.io](https://codecov.io/github/creafz/pytorch-cnn-finetune/coverage.svg?branch=master)](https://codecov.io/github/creafz/pytorch-cnn-finetune)
 
 
 ### Features
