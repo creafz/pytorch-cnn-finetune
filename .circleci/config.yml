@@ -1,0 +1,103 @@
+version: 2
+
+references:
+  base_job: &base_job
+    machine: true
+    steps:
+      - restore_cache:
+          key: torch-v1
+      - checkout
+      - run:
+          name: Update
+          command: sudo apt-get update
+      - run:
+          name: Install conda
+          command: |
+            wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+            bash miniconda.sh -b -u -p $HOME/miniconda
+            export PATH="$HOME/miniconda/bin:$PATH"
+            hash -r
+            conda config --set always_yes yes --set changeps1 no
+            conda update -q conda
+            conda info -a
+            conda create -q -n ${ENV_NAME} python=${PYTHON}
+      - run:
+          name: Install PyTorch and torchvision
+          command: |
+            source ~/miniconda/bin/activate ${ENV_NAME}
+            if [[ "$PYTORCH_VERSION" == "latest" ]]; then
+              conda install pytorch-cpu torchvision-cpu -c pytorch;
+            else
+              conda install pytorch-cpu=${PYTORCH_VERSION} -c pytorch;
+              pip install torchvision;
+            fi
+            conda install pytorch-cpu torchvision-cpu -c pytorch
+      - run:
+          name: Install dependencies
+          command: |
+            source ~/miniconda/bin/activate ${ENV_NAME}
+            pip install .[tests]
+      - run:
+          name: Run tests
+          command: |
+            source ~/miniconda/bin/activate ${ENV_NAME}
+            pytest --cov=cnn_finetune --cov-report=xml
+      - run:
+          name: Upload coverage report to codecov
+          command: |
+            sudo apt-get install -y curl
+            bash <(curl -s https://codecov.io/bash)
+      - save_cache:
+          key: torch-v1
+          paths:
+            - ~/.torch
+
+jobs:
+  pep8:
+    <<: *base_job
+    steps:
+      - checkout
+      - run:
+          name: Install pycodestyle
+          command: pip install pycodestyle
+      - run:
+          name: Check code style
+          command: pycodestyle . --max-line-length 119;
+
+  python_36_pytorch_latest:
+    <<: *base_job
+    environment:
+      PYTHON: "3.6"
+      PYTORCH_VERSION: "latest"
+      ENV_NAME: "python-36-pytorch-latest"
+
+  python_35_pytorch_latest:
+    <<: *base_job
+    environment:
+      PYTHON: "3.5"
+      PYTORCH_VERSION: "latest"
+      ENV_NAME: "python-35-pytorch-latest"
+
+  python_36_pytorch_0.3.1:
+    <<: *base_job
+    environment:
+      PYTHON: "3.6"
+      PYTORCH_VERSION: "0.3.1"
+      ENV_NAME: "python-36-pytorch-031"
+
+  python_35_pytorch_0.3.1:
+    <<: *base_job
+    environment:
+      PYTHON: "3.5"
+      PYTORCH_VERSION: "0.3.1"
+      ENV_NAME: "python-35-pytorch-031"
+
+workflows:
+  version: 2
+  run_all_jobs:
+    jobs:
+      - pep8
+      - python_36_pytorch_latest
+      - python_35_pytorch_latest
+      - python_36_pytorch_0.3.1
+      - python_35_pytorch_0.3.1

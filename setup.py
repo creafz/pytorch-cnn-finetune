@@ -9,7 +9,7 @@ def get_version():
         os.path.dirname(__file__), 'cnn_finetune', '__init__.py'
     )
     with open(filepath) as f:
-        return re.findall("__version__ = '([\d.\w]+)'", f.read())[0]
+        return re.findall(r"__version__ = '([\d.\w]+)'", f.read())[0]
 
 
 def get_long_description():
@@ -30,6 +30,7 @@ requirements = [
 tests_requirements = [
     'pytest',
     'numpy',
+    'pytest-cov',
 ]
 
 
