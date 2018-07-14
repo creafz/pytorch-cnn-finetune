@@ -5,6 +5,8 @@ jobs:
     docker:
       - image: circleci/python:3.6.1
     steps:
+      - restore_cache:
+          key: torch
       - checkout
       - run:
           name: Update
@@ -34,4 +36,8 @@ jobs:
           name: run tests
           command: |
             source ~/miniconda/bin/activate test-environment
-            pytest tests/test_torchvision_models.py::test_squeezenet_models_with_original_classifier
+            pytest -s tests/test_torchvision_models.py::test_squeezenet_models_with_original_classifier
+      - save_cache:
+          key: torch
+          paths:
+            - ~/.torch
