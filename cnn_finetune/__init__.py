@@ -1,4 +1,4 @@
-__version__ = '0.5'
+__version__ = '0.5.1'
 
 
 from cnn_finetune.contrib.torchvision import *
