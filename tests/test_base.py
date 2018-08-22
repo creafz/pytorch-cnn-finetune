@@ -40,7 +40,8 @@ def test_state_dict_features_and_classifier():
     assert '_classifier.bias' in model_state_keys
 
     features_keys = [
-        key for key in model_state_keys if key.startswith('_features')
+        key for key in model_state_keys
+        if key.startswith('_features') and key.endswith(('weight', 'bias', 'running_mean', 'running_var'))
     ]
     assert len(features_keys) == 100
 
