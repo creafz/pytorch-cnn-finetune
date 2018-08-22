@@ -175,10 +175,6 @@ def test_inceptionv4_model_with_another_input_size(input_var):
     model(input_var)
 
 
-@pytest.mark.skip(
-    'Xception model fails to load in PyTorch 0.4. '
-    'https://github.com/Cadene/pretrained-models.pytorch/issues/62'
-)
 @pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
 def test_xception_model_with_another_input_size(input_var):
     model = make_model('xception', num_classes=1000, pretrained=True)

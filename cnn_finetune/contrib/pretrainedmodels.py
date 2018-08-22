@@ -1,6 +1,9 @@
+import torch
 from torch import nn
+from torch.utils import model_zoo
 import pretrainedmodels
 from pretrainedmodels.models.dpn import adaptive_avgmax_pool2d
+from pretrainedmodels.models.xception import Xception, pretrained_settings as xception_settings
 
 from cnn_finetune.base import ModelWrapperBase, ModelInfo
 
@@ -185,6 +188,47 @@ class InceptionV4Wrapper(PretrainedModelsWrapper):
 class XceptionWrapper(PretrainedModelsWrapper):
 
     model_names = ['xception']
+
+    @staticmethod
+    def original_xception(num_classes=1000, pretrained='imagenet'):
+        # Modified version of
+        # https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py#L214
+        # that should work with PyTorch >= 0.4.
+        model = Xception(num_classes=num_classes)
+        if pretrained:
+            settings = xception_settings['xception'][pretrained]
+            assert num_classes == settings['num_classes'], \
+                "num_classes should be {}, but is {}".format(settings['num_classes'], num_classes)
+
+            model = Xception(num_classes=num_classes)
+            state_dict = model_zoo.load_url(settings['url'])
+            for name, weights in state_dict.items():
+                if 'pointwise' in name:
+                    state_dict[name] = weights.unsqueeze(-1).unsqueeze(-1)
+
+            model.load_state_dict(state_dict)
+            model.input_space = settings['input_space']
+            model.input_size = settings['input_size']
+            model.input_range = settings['input_range']
+            model.mean = settings['mean']
+            model.std = settings['std']
+
+        model.last_linear = model.fc
+        del model.fc
+        return model
+
+    def get_original_model(self):
+        # Temporary workaround for PyTorch >= 0.4 until
+        # https://github.com/Cadene/pretrained-models.pytorch/issues/62 is resolved.
+        from distutils.version import LooseVersion
+        torch_04 = LooseVersion(torch.__version__) >= LooseVersion('0.4')
+        model = self.original_xception if torch_04 else pretrainedmodels.xception
+
+        if self.pretrained:
+            model_kwargs = {'pretrained': 'imagenet', 'num_classes': 1000}
+        else:
+            model_kwargs = {'pretrained': None}
+        return model(**model_kwargs)
 
     def get_features(self, original_model):
         return nn.Sequential(*list(original_model.children())[:-1])
