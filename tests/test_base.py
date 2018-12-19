@@ -108,7 +108,7 @@ def test_make_model_error_message_for_small_input_size():
         'argument accordingly.'
     )
     with pytest.raises(RuntimeError) as exc_info:
-        make_model('vgg11', pretrained=True, num_classes=10, input_size=(8, 8))
+        make_model('alexnet', pretrained=True, num_classes=10, input_size=(8, 8))
     assert str(exc_info.value).endswith(expected_message_end)
 
 
@@ -120,7 +120,7 @@ def test_make_model_error_message_for_small_input_size_without_catching_exc():
     )
     with pytest.raises(RuntimeError) as exc_info:
         make_model(
-            'vgg11',
+            'alexnet',
             pretrained=True,
             num_classes=10,
             input_size=(8, 8),

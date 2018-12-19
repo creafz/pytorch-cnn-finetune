@@ -21,7 +21,7 @@ def get_long_description():
 requirements = [
     'torch',
     'torchvision',
-    'pretrainedmodels',
+    'pretrainedmodels>=0.7.4',
     'scipy',  # required for torchvision
     'tqdm',  # required for pretrainedmodels
 ]

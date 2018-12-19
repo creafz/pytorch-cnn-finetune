@@ -136,7 +136,7 @@ def test_dpn_models(input_var, model_name, pool, assert_equal_outputs):
         pool=pool,
         pretrained=True,
     )
-    copy_module_weights(original_model.classifier, finetune_model._classifier)
+    copy_module_weights(original_model.last_linear, finetune_model._classifier)
     assert_equal_outputs(input_var, original_model, finetune_model)
 
 
