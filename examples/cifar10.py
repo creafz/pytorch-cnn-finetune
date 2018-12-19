@@ -42,7 +42,11 @@ parser.add_argument('--dropout-p', type=float, default=0.2, metavar='D',
 args = parser.parse_args()
 use_cuda = not args.no_cuda and torch.cuda.is_available()
 device = torch.device('cuda' if use_cuda else 'cpu')
+model_name = args.model_name
 
+
+if model_name == 'alexnet':
+    raise ValueError('The input size of the CIFAR-10 data set (32x32) is too small for AlexNet')
 
 classes = (
     'plane', 'car', 'bird', 'cat', 'deer',
@@ -51,10 +55,11 @@ classes = (
 
 
 model = make_model(
-    args.model_name,
+    model_name,
     pretrained=True,
     num_classes=len(classes),
     dropout_p=args.dropout_p,
+    input_size=(32, 32) if model_name.startswith(('vgg', 'squeezenet')) else None,
 )
 model = model.to(device)
 
