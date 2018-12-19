@@ -5,7 +5,7 @@ references:
     machine: true
     steps:
       - restore_cache:
-          key: torch-v1
+          key: torch-v2
       - checkout
       - run:
           name: Update
@@ -48,7 +48,7 @@ references:
             sudo apt-get install -y curl
             bash <(curl -s https://codecov.io/bash)
       - save_cache:
-          key: torch-v1
+          key: torch-v2
           paths:
             - ~/.torch
 
@@ -64,6 +64,13 @@ jobs:
           name: Check code style
           command: pycodestyle . --max-line-length 119;
 
+  python_37_pytorch_latest:
+    <<: *base_job
+    environment:
+      PYTHON: "3.7"
+      PYTORCH_VERSION: "latest"
+      ENV_NAME: "python-37-pytorch-latest"
+
   python_36_pytorch_latest:
     <<: *base_job
     environment:
@@ -71,33 +78,26 @@ jobs:
       PYTORCH_VERSION: "latest"
       ENV_NAME: "python-36-pytorch-latest"
 
-  python_35_pytorch_latest:
+  python_37_pytorch_0.4.1:
     <<: *base_job
     environment:
-      PYTHON: "3.5"
-      PYTORCH_VERSION: "latest"
-      ENV_NAME: "python-35-pytorch-latest"
+      PYTHON: "3.7"
+      PYTORCH_VERSION: "0.4.1"
+      ENV_NAME: "python-37-pytorch-041"
 
-  python_36_pytorch_0.3.1:
+  python_36_pytorch_0.4.1:
     <<: *base_job
     environment:
       PYTHON: "3.6"
-      PYTORCH_VERSION: "0.3.1"
-      ENV_NAME: "python-36-pytorch-031"
-
-  python_35_pytorch_0.3.1:
-    <<: *base_job
-    environment:
-      PYTHON: "3.5"
-      PYTORCH_VERSION: "0.3.1"
-      ENV_NAME: "python-35-pytorch-031"
+      PYTORCH_VERSION: "0.4.1"
+      ENV_NAME: "python-36-pytorch-041"
 
 workflows:
   version: 2
   run_all_jobs:
     jobs:
       - pep8
+      - python_37_pytorch_latest
       - python_36_pytorch_latest
-      - python_35_pytorch_latest
-      - python_36_pytorch_0.3.1
-      - python_35_pytorch_0.3.1
+      - python_37_pytorch_0.4.1
+      - python_36_pytorch_0.4.1
