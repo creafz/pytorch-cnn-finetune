@@ -5,7 +5,7 @@ references:
     machine: true
     steps:
       - restore_cache:
-          key: torch-v2
+          key: torch-v3
       - checkout
       - run:
           name: Update
