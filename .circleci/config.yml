@@ -39,6 +39,7 @@ references:
             pip install .[tests]
       - run:
           name: Run tests
+          no_output_timeout: 1h
           command: |
             source ~/miniconda/bin/activate ${ENV_NAME}
             pytest --cov=cnn_finetune --cov-report=xml
