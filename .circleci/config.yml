@@ -49,9 +49,9 @@ references:
             sudo apt-get install -y curl
             bash <(curl -s https://codecov.io/bash)
       - save_cache:
-          key: torch-v2
+          key: torch-v3
           paths:
-            - ~/.torch
+            - ~/.cache/torch
 
 jobs:
   pep8:
