@@ -17,6 +17,6 @@ def make_model_x(model_name):
 
 def test_load_state_dict():
 
-    p = Pool(128)
-    print(p.map( make_model_x, MODEL_REGISTRY.keys()))
+    p = Pool(8)
+    print(p.map(make_model_x, MODEL_REGISTRY.keys()))
 
