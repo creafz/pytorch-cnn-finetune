@@ -32,9 +32,7 @@ class TorchvisionWrapper(ModelWrapperBase):
 
 class ResNetWrapper(TorchvisionWrapper):
 
-    model_names = [
-        'resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152'
-    ]
+    model_names = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152', 'resnext50_32x4d', 'resnext101_32x8d']
 
     def get_features(self, original_model):
         return nn.Sequential(*list(original_model.children())[:-2])
@@ -169,11 +167,9 @@ class SqueezeNetWrapper(TorchvisionWrapper):
         return x.view(x.size(0), self.num_classes)
 
 
-class InceptionV3Wrapper(ModelWrapperBase):
-    # aux_logits and transform_input parameters from torchvision
+class InceptionWrapper(ModelWrapperBase):
+    # aux_logits and transform_input parameters from the torchvision
     # implementation are not supported
-
-    model_names = ['inception_v3']
 
     def get_original_model_info(self, original_model):
         return ModelInfo(
@@ -190,6 +186,14 @@ class InceptionV3Wrapper(ModelWrapperBase):
 
     def get_original_classifier(self, original_model):
         return original_model.fc
+
+    def get_classifier_in_features(self, original_model):
+        return original_model.fc.in_features
+
+
+class InceptionV3Wrapper(InceptionWrapper):
+
+    model_names = ['inception_v3']
 
     def get_features(self, original_model):
         features = nn.Sequential(
@@ -213,6 +217,65 @@ class InceptionV3Wrapper(ModelWrapperBase):
             original_model.Mixed_7c,
         )
         return features
+
+
+class GoogLeNetWrapper(InceptionWrapper):
+
+    model_names = ['googlenet']
+
+    def get_features(self, original_model):
+        features = nn.Sequential(
+            original_model.conv1,
+            original_model.maxpool1,
+            original_model.conv2,
+            original_model.conv3,
+            original_model.maxpool2,
+            original_model.inception3a,
+            original_model.inception3b,
+            original_model.maxpool3,
+            original_model.inception4a,
+            original_model.inception4b,
+            original_model.inception4c,
+            original_model.inception4d,
+            original_model.inception4e,
+            original_model.maxpool4,
+            original_model.inception5a,
+            original_model.inception5b,
+        )
+        return features
+
+
+class MobileNetV2Wrapper(TorchvisionWrapper):
+
+    model_names = ['mobilenet_v2']
+
+    def get_features(self, original_model):
+        return original_model.features
+
+    def get_original_classifier(self, original_model):
+        return original_model.classifier[-1]
+
+    def get_classifier_in_features(self, original_model):
+        return original_model.classifier[-1].in_features
+
+
+class ShuffleNetV2Wrapper(TorchvisionWrapper):
+
+    model_names = ['shufflenet_v2_x0_5', 'shufflenet_v2_x1_0']
+
+    def get_features(self, original_model):
+        features = nn.Sequential(
+            original_model.conv1,
+            original_model.maxpool,
+            original_model.stage2,
+            original_model.stage3,
+            original_model.stage4,
+            original_model.conv5,
+        )
+        return features
+
+    def get_original_classifier(self, original_model):
+        return original_model.fc
 
     def get_classifier_in_features(self, original_model):
         return original_model.fc.in_features

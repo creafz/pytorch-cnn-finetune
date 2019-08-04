@@ -15,16 +15,20 @@
 
 ### Supported architectures and models
 
-#### From [torchvision](https://github.com/pytorch/vision/) package:
+#### From the [torchvision](https://github.com/pytorch/vision/) package:
 
 - ResNet (`resnet18`, `resnet34`, `resnet50`, `resnet101`, `resnet152`)
+- ResNeXt (`resnext50_32x4d`, `resnext101_32x8d`)
 - DenseNet (`densenet121`, `densenet169`, `densenet201`, `densenet161`)
 - Inception v3 (`inception_v3`)
 - VGG (`vgg11`, `vgg11_bn`, `vgg13`, `vgg13_bn`, `vgg16`, `vgg16_bn`, `vgg19`, `vgg19_bn`)
 - SqueezeNet (`squeezenet1_0`, `squeezenet1_1`)
+- MobileNet V2 (`mobilenet_v2`)
+- ShuffleNet v2 (`shufflenet_v2_x0_5`, `shufflenet_v2_x1_0`)
 - AlexNet (`alexnet`)
+- GoogLeNet (`googlenet`)
 
-#### From [Pretrained models for PyTorch](https://github.com/Cadene/pretrained-models.pytorch) package:
+#### From the [Pretrained models for PyTorch](https://github.com/Cadene/pretrained-models.pytorch) package:
 - ResNeXt (`resnext101_32x4d`, `resnext101_64x4d`)
 - NASNet-A Large (`nasnetalarge`)
 - NASNet-A Mobile (`nasnetamobile`)
