@@ -13,29 +13,23 @@ from .utils import (
 
 @pytest.mark.parametrize(
     'model_name',
-    ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152']
+    ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152', 'resnext50_32x4d', 'resnext101_32x8d']
 )
-@pytest.mark.parametrize(['pool', 'assert_equal_outputs'], [
-    (nn.AvgPool2d(7, stride=1), assert_equal_model_outputs),
-    (default, assert_almost_equal_model_outputs),
-])
-def test_resnet_models(
-    input_var, model_name, pool, assert_equal_outputs
-):
+def test_resnet_models(input_var, model_name):
     original_model = getattr(torchvision_models, model_name)(pretrained=True)
     finetune_model = make_model(
         model_name,
         num_classes=1000,
-        pool=pool,
+        pool=default,
         pretrained=True,
     )
     copy_module_weights(original_model.fc, finetune_model._classifier)
-    assert_equal_outputs(input_var, original_model, finetune_model)
+    assert_equal_model_outputs(input_var, original_model, finetune_model)
 
 
 @pytest.mark.parametrize(
     'model_name',
-    ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152']
+    ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152', 'resnext50_32x4d', 'resnext101_32x8d']
 )
 @pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
 def test_resnet_models_with_another_input_size(input_var, model_name):
@@ -43,30 +37,20 @@ def test_resnet_models_with_another_input_size(input_var, model_name):
     model(input_var)
 
 
-@pytest.mark.parametrize(
-    'model_name',
-    ['densenet121', 'densenet169', 'densenet201',  'densenet161']
-)
-@pytest.mark.parametrize(['pool', 'assert_equal_outputs'], [
-    (nn.AvgPool2d(7, stride=1), assert_equal_model_outputs),
-    (default, assert_almost_equal_model_outputs),
-])
-def test_densenet_models(input_var, model_name, pool, assert_equal_outputs):
+@pytest.mark.parametrize('model_name', ['densenet121', 'densenet169', 'densenet201',  'densenet161'])
+def test_densenet_models(input_var, model_name):
     original_model = getattr(torchvision_models, model_name)(pretrained=True)
     finetune_model = make_model(
         model_name,
         num_classes=1000,
-        pool=pool,
+        pool=default,
         pretrained=True,
     )
     copy_module_weights(original_model.classifier, finetune_model._classifier)
-    assert_equal_outputs(input_var, original_model, finetune_model)
+    assert_equal_model_outputs(input_var, original_model, finetune_model)
 
 
-@pytest.mark.parametrize(
-    'model_name',
-    ['densenet121', 'densenet169', 'densenet201',  'densenet161']
-)
+@pytest.mark.parametrize('model_name', ['densenet121', 'densenet169', 'densenet201',  'densenet161'])
 @pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
 def test_densenet_models_with_another_input_size(input_var, model_name):
     model = make_model(model_name, num_classes=1000, pretrained=True)
@@ -165,24 +149,80 @@ def test_squeezenet_models_with_another_input_size(model_name, input_var, pool):
     model(input_var)
 
 
-@pytest.mark.parametrize(['pool', 'assert_equal_outputs'], [
-    (nn.AvgPool2d(kernel_size=8), assert_equal_model_outputs),
-    (default, assert_almost_equal_model_outputs),
-])
 @pytest.mark.parametrize('input_var', [(1, 3, 299, 299)], indirect=True)
-def test_inception_v3_model(input_var, pool, assert_equal_outputs):
+def test_inception_v3_model(input_var):
     original_model = torchvision_models.inception_v3(
         pretrained=True,
         transform_input=False,
     )
     finetune_model = make_model(
-        'inception_v3', num_classes=1000, pool=pool, pretrained=True
+        'inception_v3', num_classes=1000, pool=default, pretrained=True
     )
     copy_module_weights(original_model.fc, finetune_model._classifier)
-    assert_equal_outputs(input_var, original_model, finetune_model)
+    assert_equal_model_outputs(input_var, original_model, finetune_model)
 
 
 @pytest.mark.parametrize('input_var', [(1, 3, 350, 350)], indirect=True)
 def test_inception_v3_model_with_another_input_size(input_var):
     model = make_model('inception_v3', num_classes=1000, pretrained=True)
+    model(input_var)
+
+
+@pytest.mark.parametrize('input_var', [(1, 3, 299, 299)], indirect=True)
+def test_googlenet_model(input_var):
+    original_model = torchvision_models.googlenet(
+        pretrained=True,
+        transform_input=False,
+    )
+    finetune_model = make_model(
+        'googlenet', num_classes=1000, pool=default, pretrained=True
+    )
+    copy_module_weights(original_model.fc, finetune_model._classifier)
+    assert_equal_model_outputs(input_var, original_model, finetune_model)
+
+
+@pytest.mark.parametrize('input_var', [(1, 3, 350, 350)], indirect=True)
+def test_googlenet_model_with_another_input_size(input_var):
+    model = make_model('googlenet', num_classes=1000, pretrained=True)
+    model(input_var)
+
+
+def test_mobilenet_v2_model(input_var):
+    original_model = torchvision_models.mobilenet_v2(pretrained=True)
+    finetune_model = make_model(
+        'mobilenet_v2',
+        num_classes=1000,
+        pool=default,
+        pretrained=True,
+    )
+    copy_module_weights(original_model.classifier[-1], finetune_model._classifier)
+    assert_equal_model_outputs(input_var, original_model, finetune_model)
+
+
+@pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
+def test_mobilenet_v2_model_with_another_input_size(input_var):
+    model = make_model('mobilenet_v2', num_classes=1000, pretrained=True)
+    model(input_var)
+
+
+@pytest.mark.parametrize('model_name', ['shufflenet_v2_x0_5', 'shufflenet_v2_x1_0'])
+def test_shufflenet_v2_models_with_pretrained_weights(input_var, model_name):
+    original_model = getattr(torchvision_models, model_name)(pretrained=True)
+    finetune_model = make_model(
+        model_name,
+        num_classes=1000,
+        pool=default,
+        pretrained=True,
+    )
+    copy_module_weights(original_model.fc, finetune_model._classifier)
+    assert_equal_model_outputs(input_var, original_model, finetune_model)
+
+
+@pytest.mark.parametrize(
+    'model_name',
+    ['shufflenet_v2_x0_5', 'shufflenet_v2_x1_0']
+)
+@pytest.mark.parametrize('input_var', [(1, 3, 256, 256)], indirect=True)
+def test_shufflenet_v2_models_with_another_input_size(input_var, model_name):
+    model = make_model(model_name, num_classes=1000, pretrained=True)
     model(input_var)

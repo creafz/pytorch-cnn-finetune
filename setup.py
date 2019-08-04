@@ -20,7 +20,7 @@ def get_long_description():
 
 requirements = [
     'torch',
-    'torchvision',
+    'torchvision>=0.3.0',
     'pretrainedmodels>=0.7.4',
     'scipy',  # required for torchvision
     'tqdm',  # required for pretrainedmodels
@@ -58,6 +58,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     packages=find_packages(exclude=['tests', 'examples']),
 )

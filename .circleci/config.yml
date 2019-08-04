@@ -5,7 +5,7 @@ references:
     machine: true
     steps:
       - restore_cache:
-          key: torch-v2
+          key: torch-v3
       - checkout
       - run:
           name: Update
@@ -39,6 +39,7 @@ references:
             pip install .[tests]
       - run:
           name: Run tests
+          no_output_timeout: 1h
           command: |
             source ~/miniconda/bin/activate ${ENV_NAME}
             pytest --cov=cnn_finetune --cov-report=xml
@@ -48,9 +49,9 @@ references:
             sudo apt-get install -y curl
             bash <(curl -s https://codecov.io/bash)
       - save_cache:
-          key: torch-v2
+          key: torch-v3
           paths:
-            - ~/.torch
+            - ~/.cache/torch
 
 jobs:
   pep8:
@@ -78,20 +79,6 @@ jobs:
       PYTORCH_VERSION: "latest"
       ENV_NAME: "python-36-pytorch-latest"
 
-  python_37_pytorch_0.4.1:
-    <<: *base_job
-    environment:
-      PYTHON: "3.7"
-      PYTORCH_VERSION: "0.4.1"
-      ENV_NAME: "python-37-pytorch-041"
-
-  python_36_pytorch_0.4.1:
-    <<: *base_job
-    environment:
-      PYTHON: "3.6"
-      PYTORCH_VERSION: "0.4.1"
-      ENV_NAME: "python-36-pytorch-041"
-
 workflows:
   version: 2
   run_all_jobs:
@@ -99,5 +86,3 @@ workflows:
       - pep8
       - python_37_pytorch_latest
       - python_36_pytorch_latest
-      - python_37_pytorch_0.4.1
-      - python_36_pytorch_0.4.1
