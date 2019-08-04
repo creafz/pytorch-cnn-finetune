@@ -78,20 +78,6 @@ jobs:
       PYTORCH_VERSION: "latest"
       ENV_NAME: "python-36-pytorch-latest"
 
-  python_37_pytorch_0.4.1:
-    <<: *base_job
-    environment:
-      PYTHON: "3.7"
-      PYTORCH_VERSION: "0.4.1"
-      ENV_NAME: "python-37-pytorch-041"
-
-  python_36_pytorch_0.4.1:
-    <<: *base_job
-    environment:
-      PYTHON: "3.6"
-      PYTORCH_VERSION: "0.4.1"
-      ENV_NAME: "python-36-pytorch-041"
-
 workflows:
   version: 2
   run_all_jobs:
@@ -99,5 +85,3 @@ workflows:
       - pep8
       - python_37_pytorch_latest
       - python_36_pytorch_latest
-      - python_37_pytorch_0.4.1
-      - python_36_pytorch_0.4.1
