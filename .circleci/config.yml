@@ -42,7 +42,7 @@ references:
           no_output_timeout: 1h
           command: |
             source ~/miniconda/bin/activate ${ENV_NAME}
-            pytest --cov=cnn_finetune --cov-report=xml
+            pytest -s
       - run:
           name: Upload coverage report to codecov
           command: |
@@ -83,6 +83,4 @@ workflows:
   version: 2
   run_all_jobs:
     jobs:
-      - pep8
       - python_37_pytorch_latest
-      - python_36_pytorch_latest
