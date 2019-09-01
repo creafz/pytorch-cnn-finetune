@@ -57,7 +57,7 @@ def train(model, epoch, optimizer, train_loader, criterion=nn.CrossEntropyLoss()
                 100. * batch_idx / len(train_loader), total_loss / total_size))
 
 
-def test():
+def test(model, test_loader):
     model.eval()
     test_loss = 0
     correct = 0
@@ -125,7 +125,7 @@ def main():
     # Train
     for epoch in range(1, args.epochs + 1):
         train(model, epoch, optimizer, train_loader)
-        test()
+        test(model, test_loader)
       
 
 if __name__ == '__main__':
