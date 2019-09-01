@@ -37,6 +37,9 @@ parser.add_argument('--model-name', type=str, default='resnet50', metavar='M',
 parser.add_argument('--dropout-p', type=float, default=0.2, metavar='D',
                     help='Dropout probability (default: 0.2)')
 
+args = parser.parse_args()
+use_cuda = not args.no_cuda and torch.cuda.is_available()
+device = torch.device('cuda' if use_cuda else 'cpu')
 
 def train(model, epoch, optimizer, train_loader, criterion=nn.CrossEntropyLoss()):
     total_loss = 0
@@ -78,9 +81,6 @@ def test(model, test_loader):
 def main():
     '''Main function to run code in this script'''
     
-    args = parser.parse_args()
-    use_cuda = not args.no_cuda and torch.cuda.is_available()
-    device = torch.device('cuda' if use_cuda else 'cpu')
     model_name = args.model_name
 
     if model_name == 'alexnet':
