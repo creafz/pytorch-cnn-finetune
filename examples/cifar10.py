@@ -38,7 +38,7 @@ parser.add_argument('--dropout-p', type=float, default=0.2, metavar='D',
                     help='Dropout probability (default: 0.2)')
 
 
-def train(epoch):
+def train(model, epoch, optimizer, train_loader, criterion=nn.CrossEntropyLoss()):
     total_loss = 0
     total_size = 0
     model.train()
@@ -119,13 +119,12 @@ def main():
     test_loader = torch.utils.data.DataLoader(
         test_set, args.test_batch_size, shuffle=False, num_workers=2
     )
-
-    criterion = nn.CrossEntropyLoss()
+    
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
     
     # Train
     for epoch in range(1, args.epochs + 1):
-        train(epoch)
+        train(model, epoch, optimizer, train_loader)
         test()
       
 
