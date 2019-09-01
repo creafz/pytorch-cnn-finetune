@@ -122,8 +122,13 @@ def main():
     
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
     
+    # Use exponential decay for fine-tuning optimizer
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.975)
+    
     # Train
     for epoch in range(1, args.epochs + 1):
+        # Decay Learning Rate
+        scheduler.step()
         train(model, epoch, optimizer, train_loader)
         test(model, test_loader)
       
