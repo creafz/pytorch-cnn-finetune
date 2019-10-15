@@ -15,7 +15,6 @@ import torch.optim as optim
 
 from cnn_finetune import make_model
 
-
 parser = argparse.ArgumentParser(description='cnn_finetune cifar 10 example')
 parser.add_argument('--batch-size', type=int, default=32, metavar='N',
                     help='input batch size for training (default: 32)')
@@ -38,57 +37,11 @@ parser.add_argument('--model-name', type=str, default='resnet50', metavar='M',
 parser.add_argument('--dropout-p', type=float, default=0.2, metavar='D',
                     help='Dropout probability (default: 0.2)')
 
-
 args = parser.parse_args()
 use_cuda = not args.no_cuda and torch.cuda.is_available()
 device = torch.device('cuda' if use_cuda else 'cpu')
-model_name = args.model_name
 
-
-if model_name == 'alexnet':
-    raise ValueError('The input size of the CIFAR-10 data set (32x32) is too small for AlexNet')
-
-classes = (
-    'plane', 'car', 'bird', 'cat', 'deer',
-    'dog', 'frog', 'horse', 'ship', 'truck'
-)
-
-
-model = make_model(
-    model_name,
-    pretrained=True,
-    num_classes=len(classes),
-    dropout_p=args.dropout_p,
-    input_size=(32, 32) if model_name.startswith(('vgg', 'squeezenet')) else None,
-)
-model = model.to(device)
-
-
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=model.original_model_info.mean,
-        std=model.original_model_info.std),
-])
-
-train_set = torchvision.datasets.CIFAR10(
-    root='./data', train=True, download=True, transform=transform
-)
-train_loader = torch.utils.data.DataLoader(
-    train_set, batch_size=args.batch_size, shuffle=True, num_workers=2
-)
-test_set = torchvision.datasets.CIFAR10(
-    root='./data', train=False, download=True, transform=transform
-)
-test_loader = torch.utils.data.DataLoader(
-    test_set, args.test_batch_size, shuffle=False, num_workers=2
-)
-
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
-
-
-def train(epoch):
+def train(model, epoch, optimizer, train_loader, criterion=nn.CrossEntropyLoss()):
     total_loss = 0
     total_size = 0
     model.train()
@@ -107,7 +60,7 @@ def train(epoch):
                 100. * batch_idx / len(train_loader), total_loss / total_size))
 
 
-def test():
+def test(model, test_loader):
     model.eval()
     test_loss = 0
     correct = 0
@@ -124,7 +77,61 @@ def test():
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
 
+    
+def main():
+    '''Main function to run code in this script'''
+    
+    model_name = args.model_name
 
-for epoch in range(1, args.epochs + 1):
-    train(epoch)
-    test()
+    if model_name == 'alexnet':
+        raise ValueError('The input size of the CIFAR-10 data set (32x32) is too small for AlexNet')
+
+    classes = (
+        'plane', 'car', 'bird', 'cat', 'deer',
+        'dog', 'frog', 'horse', 'ship', 'truck'
+    )
+
+    model = make_model(
+        model_name,
+        pretrained=True,
+        num_classes=len(classes),
+        dropout_p=args.dropout_p,
+        input_size=(32, 32) if model_name.startswith(('vgg', 'squeezenet')) else None,
+    )
+    model = model.to(device)
+
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=model.original_model_info.mean,
+            std=model.original_model_info.std),
+    ])
+
+    train_set = torchvision.datasets.CIFAR10(
+        root='./data', train=True, download=True, transform=transform
+    )
+    train_loader = torch.utils.data.DataLoader(
+        train_set, batch_size=args.batch_size, shuffle=True, num_workers=2
+    )
+    test_set = torchvision.datasets.CIFAR10(
+        root='./data', train=False, download=True, transform=transform
+    )
+    test_loader = torch.utils.data.DataLoader(
+        test_set, args.test_batch_size, shuffle=False, num_workers=2
+    )
+    
+    optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
+    
+    # Use exponential decay for fine-tuning optimizer
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.975)
+    
+    # Train
+    for epoch in range(1, args.epochs + 1):
+        # Decay Learning Rate
+        scheduler.step()
+        train(model, epoch, optimizer, train_loader)
+        test(model, test_loader)
+      
+
+if __name__ == '__main__':
+    main()
