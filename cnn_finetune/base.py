@@ -62,12 +62,9 @@ class ModelWrapperBase(nn.Module, metaclass=ModelWrapperMeta):
     registered in the global MODEL_REGISTRY upon class initialization.
     """
 
-    # If True an output of .features() call will be converted
-    # to a tensor of shape [B, C * H * W].
-    flatten_features_output = True
-
     def __init__(self, *, model_name, num_classes, pretrained, dropout_p, pool,
-                 classifier_factory, use_original_classifier, input_size,
+                 flatten_features_output, classifier_factory,
+                 use_original_classifier, input_size,
                  original_model_state_dict, catch_output_size_exception):
         super().__init__()
 
@@ -94,6 +91,7 @@ class ModelWrapperBase(nn.Module, metaclass=ModelWrapperMeta):
         self.num_classes = num_classes
         self.pretrained = pretrained
         self.catch_output_size_exception = catch_output_size_exception
+        self.flatten_features_output = flatten_features_output
 
         original_model = self.get_original_model()
         if original_model_state_dict is not None:
@@ -224,6 +222,7 @@ def make_model(
     pretrained=True,
     dropout_p=None,
     pool=default,
+    flatten_features_output=True,
     classifier_factory=None,
     use_original_classifier=False,
     input_size=None,
